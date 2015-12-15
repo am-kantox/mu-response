@@ -11,7 +11,11 @@ defmodule MuResponse.Api.V1.HolidayController do
   end
 
   def show(conn, %{"id" => id}) do
-    days = Enum.reduce(String.split(id, ~r{,}), %{}, fn(currency, acc) ->
+    currencies =  case id do
+                    "*" -> get_currency_list
+                    _   -> String.split(id, ~r{,})
+                  end
+    days = Enum.reduce(currencies, %{}, fn(currency, acc) ->
       Map.put(acc, currency, get_currency(currency))
     end)
     holidays = Map.put(days, :all, Enum.uniq(Enum.reduce(days, [], fn({_, v}, acc) ->
@@ -26,7 +30,7 @@ defmodule MuResponse.Api.V1.HolidayController do
   def start_link do
     case Agent.start_link(fn -> %{} end, name: __MODULE__) do
       {:ok, pid} ->
-        watch_currencies
+        reload_currencies
         {:ok, pid}
       _ -> :error
     end
@@ -37,11 +41,7 @@ defmodule MuResponse.Api.V1.HolidayController do
   end
 
   def get_currency_list do
-    case get_currency_path |> File.ls do
-      {:ok, files} ->
-        Enum.map(files, fn file -> String.slice(file, 0..2) end)
-      _ -> :error
-    end
+    Agent.get(__MODULE__, &Map.keys(&1))
   end
 
   def get_currency(currency) do
@@ -53,6 +53,14 @@ defmodule MuResponse.Api.V1.HolidayController do
     end)
   end
 
+  def load_currency_list do
+    case get_currency_path |> File.ls do
+      {:ok, files} ->
+        Enum.map(files, fn file -> String.slice(file, 0..2) end)
+      _ -> :error
+    end
+  end
+
   def load_currency(currency) do
     File.cwd!
     |> Path.join("data/holidays/#{currency}.yml")
@@ -60,7 +68,7 @@ defmodule MuResponse.Api.V1.HolidayController do
   end
 
   def load_currencies do
-    Enum.reduce(get_currency_list, %{}, fn(currency, acc) ->
+    Enum.reduce(load_currency_list, %{}, fn(currency, acc) ->
       Map.put(acc, currency, load_currency(currency))
     end)
   end
@@ -70,7 +78,15 @@ defmodule MuResponse.Api.V1.HolidayController do
   end
 
   def update_currencies do
-    Enum.each(get_currency_list, fn(currency) -> update_currency(currency) end)
+    Enum.each(load_currency_list, fn(currency) -> update_currency(currency) end)
+  end
+
+  def reload_currencies do
+    unwatch_currencies
+    Agent.get_and_update(__MODULE__, fn map ->
+      { Enum.into(map, []), load_currencies }
+    end)
+    watch_currencies
   end
 
   # inotify should be installed on target https://github.com/massemanet/inotify
@@ -79,15 +95,23 @@ defmodule MuResponse.Api.V1.HolidayController do
   #                 {:line, 92},
   #                 ...]
   def watch_currencies do
-    :inoteefy.watch(String.to_char_list(get_currency_path), fn _ ->
-      Agent.get_and_update(__MODULE__, fn map ->
-        { Enum.into(map, []), load_currencies }
-      end)
+    :inoteefy.watch(String.to_char_list(get_currency_path), fn params ->
+      case params do
+        {_, [:create], _, _} -> reload_currencies
+        {_, [:close_write], _, _} -> reload_currencies
+        {_, [:move_from], _, _} -> reload_currencies
+        _ -> :noop
+      end
     end)
   end
 
   def unwatch_currencies do
-    :inoteefy.unwatch(get_currency_path)
+    :inoteefy.unwatch(String.to_char_list(get_currency_path))
+    case get_currency_path |> File.ls do
+      {:ok, files} ->
+        Enum.each(files, fn file -> :inoteefy.unwatch(String.to_char_list(file)) end)
+      _ -> :error
+    end
   end
 
 end
