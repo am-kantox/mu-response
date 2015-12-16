@@ -3,7 +3,7 @@
 To start your `μResponse` app:
 
   1. Install dependencies with `mix deps.get`
-  2. Download [`inotify`](file watcher) and install it:
+  2. Download [`inotify` file watcher](https://github.com/am-kantox/inotify) and install it:
     1. `git clone git@github.com:am-kantox/inotify.git`
     2. `cd inotify && aclocal && autoconf && automake --add-missing && ./configure && make && make install`
   3. ~~Create and migrate your database with `mix ecto.create && mix ecto.migrate`~~ this step is not needed yet
