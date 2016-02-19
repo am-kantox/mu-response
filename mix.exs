@@ -24,7 +24,7 @@ defmodule MuResponse.Mixfile do
         :cowboy,
         :logger,
         :phoenix_ecto,
-        :postgrex,
+        :mariaex,
         :yaml_elixir
       ]
     ]
@@ -39,13 +39,13 @@ defmodule MuResponse.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.0.4"},
-      {:phoenix_ecto, "~> 1.1"},
-      {:postgrex, ">= 0.0.0"},
+      {:phoenix, "~> 1.1"},
+      {:phoenix_ecto, "~> 2.0"},
+      {:mariaex, "~> 0.4"},
       {:phoenix_html, "~> 2.1"},
       {:phoenix_live_reload, "~> 1.0", only: :dev},
       {:cowboy, "~> 1.0"},
-      {:yaml_elixir, "~> 1.0.0"},
+      {:yaml_elixir, "~> 1.0"},
       {:yamerl, github: "yakaz/yamerl"}
     ]
   end

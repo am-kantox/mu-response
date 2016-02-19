@@ -11,9 +11,7 @@ config :logger, level: :warn
 
 # Configure your database
 config :mu_response, MuResponse.Repo,
-  adapter: Ecto.Adapters.Postgres,
-  username: "postgres",
-  password: "postgres",
-  database: "mu_response_test",
-  hostname: "localhost",
-  pool: Ecto.Adapters.SQL.Sandbox
+  adapter: Ecto.Adapters.MySQL,
+  username: "root",
+  password: "",
+  database: "kantox_demo_20160118"

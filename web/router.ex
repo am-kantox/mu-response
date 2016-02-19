@@ -29,6 +29,8 @@ defmodule MuResponse.Router do
         # [AM] Later on we probably will permit updating holidays thru web interface
         # http://www.phoenixframework.org/docs/routing#section-nested-resources
       end
+      resources "/hedge_info", HedgeInfoController, only: [:index] do
+      end
     end
   end
 

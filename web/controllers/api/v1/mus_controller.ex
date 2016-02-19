@@ -5,6 +5,9 @@ defmodule MuResponse.Api.V1.MusController do
   use MuResponse.Web, :controller
 
   def index(conn, _params) do
-    json conn, %{ endpoints: %{ holidays: api_v1_holiday_url(Endpoint, :index) } }
+    json conn, %{ endpoints: %{
+      holidays: api_v1_holiday_url(Endpoint, :index),
+      hedge_info: api_v1_hedge_info_url(Endpoint, :index)
+    }}
   end
 end
