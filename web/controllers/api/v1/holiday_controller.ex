@@ -21,7 +21,7 @@ defmodule MuResponse.Api.V1.HolidayController do
     holidays = Map.put(days, :all, Enum.uniq(Enum.reduce(days, [], fn({_, v}, acc) ->
       acc ++ v
     end)))
-    json conn, holidays
+    json conn, Map.put(holidays, :now, is_now_open(holidays.all))
   end
 
   #########################################
@@ -114,4 +114,19 @@ defmodule MuResponse.Api.V1.HolidayController do
     end
   end
 
+  def is_now_open holidays do
+    now_time = Calendar.DateTime.now_utc
+    # {:ok, now_time} = Calendar.DateTime.from_erl {{2016, 02, 20}, {12, 00, 00}}, "America/New_York"
+    now_dow = now_time |> Calendar.Date.day_of_week_name
+    now = now_time |> Calendar.DateTime.Format.rfc3339 |> String.slice(0, 10)
+    case now_dow do
+      "Monday" -> true
+      "Tuesday" -> true
+      "Wednesday" -> true
+      "Thursday" -> true
+      "Friday" -> now_time.hour < 22
+      "Saturday" -> false
+      "Sunday" -> now_time.hour >= 22
+    end and (not Enum.any?(holidays, fn x -> x == now end))
+  end
 end

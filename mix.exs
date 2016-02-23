@@ -24,6 +24,7 @@ defmodule MuResponse.Mixfile do
         :cowboy,
         :logger,
         :phoenix_ecto,
+        :calendar,
         :mariaex,
         :yaml_elixir
       ]
@@ -44,6 +45,7 @@ defmodule MuResponse.Mixfile do
       {:mariaex, "~> 0.4"},
       {:phoenix_html, "~> 2.1"},
       {:phoenix_live_reload, "~> 1.0", only: :dev},
+      {:calendar, "~> 0.12.4"},
       {:cowboy, "~> 1.0"},
       {:yaml_elixir, "~> 1.0"},
       {:yamerl, github: "yakaz/yamerl"}
