@@ -26,6 +26,7 @@ defmodule MuResponse.Mixfile do
         :phoenix_ecto,
         :calendar,
         :mariaex,
+        :abacus,
         :yaml_elixir
       ]
     ]
@@ -40,15 +41,17 @@ defmodule MuResponse.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.1"},
+      {:phoenix, "~> 1.2"},
       {:phoenix_ecto, "~> 2.0"},
       {:mariaex, "~> 0.4"},
       {:phoenix_html, "~> 2.1"},
       {:phoenix_live_reload, "~> 1.0", only: :dev},
-      {:calendar, "~> 0.12.4"},
+      {:calendar, "~> 0.12"},
       {:cowboy, "~> 1.0"},
       {:yaml_elixir, "~> 1.0"},
-      {:yamerl, github: "yakaz/yamerl"}
+      {:yamerl, github: "yakaz/yamerl"},
+      {:abacus, github: "narrowtux/abacus"}, # bump to version when parse is ready
+      {:credo, "~> 0.4", only: [:dev, :test]},
     ]
   end
 

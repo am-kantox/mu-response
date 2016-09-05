@@ -13,7 +13,7 @@ defmodule MuResponse.Api.V1.HolidayController do
   def show(conn, %{"id" => id}) do
     currencies =  case id do
                     "*" -> get_currency_list
-                    _   -> String.split(id, ~r{,})
+                    _   -> String.split(id, ~r{\W})
                   end
     days = Enum.reduce(currencies, %{}, fn(currency, acc) ->
       Map.put(acc, currency, get_currency(currency))
@@ -65,6 +65,7 @@ defmodule MuResponse.Api.V1.HolidayController do
     File.cwd!
     |> Path.join("data/holidays/#{currency}.yml")
     |> YamlElixir.read_from_file
+    |> Enum.uniq
   end
 
   def load_currencies do

@@ -12,6 +12,7 @@ config :logger, level: :warn
 # Configure your database
 config :mu_response, MuResponse.Repo,
   adapter: Ecto.Adapters.MySQL,
+  pool: Ecto.Adapters.SQL.Sandbox,
   username: "root",
   password: "",
   database: "kantox_demo_20160118"
